@@ -1,6 +1,4 @@
-
-'use client';
- 
+import { Metadata } from 'next';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
@@ -9,24 +7,24 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/app/ui/button';
-import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
-import { useSearchParams } from 'next/navigation';
 
-import { Metadata } from 'next';
-
+// This exports metadata and remains server-side
 export const metadata: Metadata = {
   title: 'Login',
 };
- 
-export default function LoginForm() {
+
+// Client-side form component (must be a separate component)
+function ClientLoginForm() {
+  // We need to dynamically import client-side hooks to avoid server-side usage
+  const { useActionState, useSearchParams } = require('react');
+  const { authenticate } = require('@/app/lib/actions');
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined,
   );
- 
+
   return (
     <form action={formAction} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -92,5 +90,16 @@ export default function LoginForm() {
         </div>
       </div>
     </form>
+  );
+}
+
+// The page component itself remains server-side
+export default function LoginPage() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <ClientLoginForm />
+      </div>
+    </main>
   );
 }
