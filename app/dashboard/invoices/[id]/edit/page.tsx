@@ -12,11 +12,8 @@ interface PageParams {
   id: string;
 }
 
-
-export default async function Page({ params }: { params: { id: string } }) {
-  // Add this type assertion
-  const pageParams = params as unknown as { id: string };
-  const id = pageParams.id;
+export default async function Page({ params }: { params: PageParams }) {
+  const { id } = params;
   
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
